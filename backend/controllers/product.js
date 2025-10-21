@@ -70,9 +70,37 @@ const listProducts = async (req, res) => {
 };
 
 // Function for deleting product
-const deleteProduct = async (req, res) => {};
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
 
-// Function for removing product
-const singleProduct = (req, res) => {};
+    await productModel.findByIdAndDelete(id);
+    res.json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Function for retrieving a single product
+const singleProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Use the model to find the product by its ObjectId
+    const product = await productModel.findById(id);
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error("Error fetching single product:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 export { addProduct, listProducts, deleteProduct, singleProduct };
